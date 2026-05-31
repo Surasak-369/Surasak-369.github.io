@@ -4,8 +4,8 @@ const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
-  './pem3-192.png',
-  './pem3-512.png'
+  './PEM3-192.png',
+  './PEM3-512.png'
 ];
 
 // 1. ขั้นตอน Install: ทำการสร้าง Cache และบันทึกไฟล์
