@@ -1,24 +1,34 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
- <HEAD>
-
+<!DOCTYPE html>
+<html lang="th">
+<head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>การติดตั้ง วพม.3</title>
 
-  <TITLE> วพม.3</TITLE>
+    <!-- 1. เชื่อมต่อไฟล์ manifest.json ที่ถูกต้อง -->
+    <link rel="manifest" href="./manifest.json">
 
- </HEAD>
+    <!-- 2. กำหนด Theme Color สำหรับแถบบนมือถือ -->
+    <meta name="theme-color" content="#0066cc">
 
- <BODY>
-  <link rel="manifest" href="manifest.json">
+    <!-- 3. เชื่อมต่อไอคอนสำหรับแสดงบนหน้าจอ -->
+    <link rel="icon" type="image/png" href="./pem3-192.png">
+    <link rel="apple-touch-icon" href="./pem3-192.png">
+</head>
+<body>
 
-<script>
-    window.location.href =
-    "https://www.canva.com/design/DAFSc2VeRmg/cQD6ppBIfpTZSqt0zybjvA/view?utm_content=DAFSc2VeRmg&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink#1";
+    <h1>ยินดีต้อนรับสู่ระบบ วพม.3</h1>
+    <p>ขณะนี้ระบบพร้อมใช้งานและรองรับการติดตั้งเป็นแอป (PWA) แล้ว</p>
 
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js');
-    }
-</script>
- </BODY>
-
-</HTML>
+    <!-- 4. โค้ดเปิดใช้งาน Service Worker (sw.js) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker ลงทะเบียนสำเร็จ:', reg.scope))
+                    .catch(err => console.error('Service Worker ลงทะเบียนล้มเหลว:', err));
+            });
+        }
+    </script>
+</body>
+</html>
