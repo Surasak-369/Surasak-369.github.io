@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pem3-cache-v1';
+const CACHE_NAME = 'PEM3-cache-v1';
 // รายชื่อไฟล์ทั้งหมดที่ต้องการให้ใช้งานแบบออฟไลน์ได้
 const ASSETS_TO_CACHE = [
   './',
