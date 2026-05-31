@@ -4,30 +4,115 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>การติดตั้ง วพม.3</title>
-
-    <!-- 1. เชื่อมต่อไฟล์ manifest.json ที่ถูกต้อง -->
     <link rel="manifest" href="./manifest.json">
-
-    <!-- 2. กำหนด Theme Color สำหรับแถบบนมือถือ -->
     <meta name="theme-color" content="#0066cc">
-
-    <!-- 3. เชื่อมต่อไอคอนสำหรับแสดงบนหน้าจอ -->
     <link rel="icon" type="image/png" href="./pem3-192.png">
     <link rel="apple-touch-icon" href="./pem3-192.png">
+    
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding: 50px 20px;
+            background-color: #f5f5f5;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: inline-block;
+            max-width: 400px;
+        }
+        /* ซ่อนปุ่มติดตั้งไว้ก่อนชั่วคราว */
+        #btnInstall {
+            display: none; 
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
+            width: 100%;
+        }
+        #btnInstall:hover {
+            background-color: #004c99;
+        }
+        .ios-info {
+            display: none;
+            background-color: #e6f2ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #333;
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
 
-    <h1>ยินดีต้อนรับสู่ระบบ วพม.3</h1>
-    <p>ขณะนี้ระบบพร้อมใช้งานและรองรับการติดตั้งเป็นแอป (PWA) แล้ว</p>
+    <div class="card">
+        <h1>ยินดีต้อนรับสู่ระบบ วพม.3</h1>
+        <p>ขณะนี้ระบบพร้อมใช้งานแล้ว</p>
+        
+        <!-- ปุ่มติดตั้งที่จะแสดงขึ้นมาอัตโนมัติเมื่อระบบ PWA พร้อมทำงาน -->
+        <button id="btnInstall">➕ คลิกที่นี่เพื่อติดตั้งแอป</button>
+        
+        <!-- กล่องข้อความแนะนำสำหรับคนใช้ iPhone/iPad -->
+        <div id="iosPrompt" class="ios-info">
+            💡 <strong>วิธีติดตั้งสำหรับ iPhone (Safari):</strong><br>
+            1. กดปุ่ม <strong>แชร์ (Share รูปกล่องพร้อมลูกศรชี้ขึ้น)</strong> ด้านล่างจอ<br>
+            2. เลื่อนลงแล้วเลือก <strong>"เพิ่มไปยังหน้าจอโฮม" (Add to Home Screen)</strong>
+        </div>
+    </div>
 
-    <!-- 4. โค้ดเปิดใช้งาน Service Worker (sw.js) -->
     <script>
+        // 1. ลงทะเบียน Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Service Worker ลงทะเบียนสำเร็จ:', reg.scope))
-                    .catch(err => console.error('Service Worker ลงทะเบียนล้มเหลว:', err));
+                    .then(reg => console.log('Service Worker ทำงานปกติ'))
+                    .catch(err => console.error('Service Worker ผิดพลาด', err));
             });
+        }
+
+        // 2. ดักจับเหตุการณ์เพื่อเปิดแสดงปุ่มติดตั้งบน Android/PC
+        let deferredPrompt;
+        const btnInstall = document.getElementById('btnInstall');
+        const iosPrompt = document.getElementById('iosPrompt');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // ป้องกันไม่ให้เบราว์เซอร์เปิดหน้าต่างติดตั้งเองอัตโนมัติ
+            e.preventDefault();
+            // เก็บเหตุการณ์ไว้ในตัวแปรเพื่อใช้กดทีหลัง
+            deferredPrompt = e;
+            // สั่งให้ปุ่มติดตั้งแสดงขึ้นมาบนหน้าจอ
+            btnInstall.style.display = 'block';
+        });
+
+        // 3. เมื่อผู้ใช้คลิกปุ่มติดตั้ง
+        btnInstall.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt(); // เปิดหน้าต่างป๊อปอัปให้กดติดตั้ง
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('ผู้ใช้ยอมรับการติดตั้งแอป');
+                }
+                deferredPrompt = null;
+                btnInstall.style.display = 'none'; // ซ่อนปุ่มเมื่อติดตั้งแล้ว
+            }
+        });
+
+        // 4. ตรวจสอบเงื่อนไขแสดงคำแนะนำเฉพาะบน iOS (iPhone/iPad)
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        
+        if (isIOS && !isStandalone) {
+            iosPrompt.style.display = 'block'; // แสดงวิธีทำบน Safari ของ iOS
         }
     </script>
 </body>
