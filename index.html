@@ -9,7 +9,7 @@
     <link rel="icon" type="image/png" href="./PEM3-192.png">
     <link rel="icon" type="image/png" href="./PEM3-512.png">
     <link rel="apple-touch-icon" href="./PEM3-192.png">
-     <link rel="apple-touch-icon" href="./PEM3-512.png">
+    <link rel="apple-touch-icon" href="./PEM3-512.png">
     <style>
         body {
             font-family: sans-serif;
@@ -60,10 +60,8 @@
         <h1>ยินดีต้อนรับสู่ระบบ วพม.3</h1>
         <p>ขณะนี้ระบบพร้อมใช้งานแล้ว</p>
         
-        <!-- ปุ่มติดตั้งที่จะแสดงขึ้นมาอัตโนมัติเมื่อระบบ PWA พร้อมทำงาน -->
         <button id="btnInstall">➕ คลิกที่นี่เพื่อติดตั้งแอป</button>
         
-        <!-- กล่องข้อความแนะนำสำหรับคนใช้ iPhone/iPad -->
         <div id="iosPrompt" class="ios-info">
             💡 <strong>วิธีติดตั้งสำหรับ iPhone (Safari):</strong><br>
             1. กดปุ่ม <strong>แชร์ (Share รูปกล่องพร้อมลูกศรชี้ขึ้น)</strong> ด้านล่างจอ<br>
@@ -72,10 +70,6 @@
     </div>
 
     <script>
-        // Link to Google Canva 
-        window.location.href =
-    "https://www.canva.com/design/DAFSc2VeRmg/cQD6ppBIfpTZSqt0zybjvA/view?utm_content=DAFSc2VeRmg&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink#1";
-
         // 1. ลงทะเบียน Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -110,6 +104,13 @@
                 deferredPrompt = null;
                 btnInstall.style.display = 'none'; // ซ่อนปุ่มเมื่อติดตั้งแล้ว
             }
+        });
+
+        // ดักจับเมื่อติดตั้งสำเร็จแล้วให้ซ่อนปุ่มทันที
+        window.addEventListener('appinstalled', () => {
+            console.log('แอปถูกติดตั้งเรียบร้อยแล้ว');
+            deferredPrompt = null;
+            btnInstall.style.display = 'none';
         });
 
         // 4. ตรวจสอบเงื่อนไขแสดงคำแนะนำเฉพาะบน iOS (iPhone/iPad)
